@@ -120,7 +120,7 @@ You may use any programming language you like. Python, Node.js, and Go are all r
 
 This service manages a roster of doctors and their available appointment slots. It must be running and healthy **before** the Appointment Service tries to contact it, so start here.
 
-**Data model** — maintain an in-memory roster with at least three doctors. Each doctor has:
+**Data model** — maintain an in-memory (or if you want to, a postgres DB) roster with at least three doctors. Each doctor has:
 - A unique ID (e.g. `"D001"`)
 - A name
 - A specialty
@@ -421,21 +421,6 @@ Submit your repository (as a zip or a link to a GitHub repository) containing:
 - [ ] `notification-service/` with source code and `Dockerfile`
 - [ ] `records-service/` with source code and `Dockerfile`
 - [ ] `docker-compose.yml`
-- [ ] A short `REPORT.md` (one page max) answering the reflection questions below
-
----
-
-## Reflection Questions (answer in REPORT.md)
-
-1. The Appointment Service waits for the Doctor Service to respond before replying to the patient. What are the implications of this design? What happens to the Appointment Service if the Doctor Service is slow or crashes?
-
-2. The Notification and Records services receive the same message independently via their own queues. What would happen if you used a single shared queue instead of two separate queues bound to a fanout exchange? How would behaviour change?
-
-3. Right now, if the Appointment Service crashes after reserving a slot but *before* publishing the RabbitMQ message, the slot is decremented but no notification or record is created. Describe at least one strategy you could use to address this inconsistency.
-
-4. `depends_on` in Docker Compose does not guarantee that a service is *ready* before dependent services start. How did you handle this in your worker services, and why is this problem inherent to distributed systems?
-
-5. You set `prefetch_count=1` in your consumers. Describe a realistic scenario where a higher prefetch value (e.g. `10`) might be preferable, and one where it could cause problems.
 
 ---
 
