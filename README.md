@@ -339,9 +339,9 @@ The `docker-compose.yml` at the root of the repository must:
    - `appointment-service` starts after `doctor-service` and `rabbitmq`.
    - `notification-service` and `records-service` start after `rabbitmq`.
 4. Pass the Doctor Service URL to `appointment-service` as an environment variable.
-5. Pass the RabbitMQ connection details (host, user, password) to the three services that use it as environment variables.
+5. Pass the RabbitMQ connection details (host, user, password) to the three services that use it as environment variables (you may not have user and password if you don't want to).
 6. Place all four microservices and RabbitMQ on a shared custom Docker network.
-7. Expose `appointment-service` on port `5001` and `doctor-service` on port `5002` on the host so you can test them with `curl` or Postman.
+7. Expose `appointment-service` on port `5001` and `doctor-service` on port `5002` on the host so you can test them with `curl` or Bruno.
 
 > **Tip:** `depends_on` only waits for the container to *start*, not for the service inside it to be *ready*. This is why your RabbitMQ consumers need the retry loop mentioned above.
 
@@ -428,13 +428,12 @@ Submit your repository (as a zip or a link to a GitHub repository) containing:
 
 | Criteria                                                                    | Marks |
 |-----------------------------------------------------------------------------|-------|
-| Doctor Service — correct endpoints and slot management                      | 15    |
-| Appointment Service — correct HTTP call to Doctor Service                   | 15    |
-| Appointment Service — correct RabbitMQ publish on successful reservation    | 15    |
-| Notification Service — consumes from queue, manual ack, prefetch            | 10    |
-| Records Service — consumes from queue, manual ack, prefetch                 | 10    |
-| Correct fanout exchange with two bound queues                               | 10    |
-| Dockerfiles — build and run correctly for all four services                 | 10    |
-| docker-compose.yml — networking, env vars, port mapping, depends_on         | 10    |
-| Reflection questions (REPORT.md)                                            | 5     |
-| **Total**                                                                   | **100** |
+| Doctor Service — correct endpoints and slot management                      | 1    |
+| Appointment Service — correct HTTP call to Doctor Service                   | 1    |
+| Appointment Service — correct RabbitMQ publish on successful reservation    | 1    |
+| Notification Service — consumes from queue, manual ack, prefetch            | 1    |
+| Records Service — consumes from queue, manual ack, prefetch                 | 1    |
+| Correct fanout exchange with two bound queues                               | 1    |
+| Dockerfiles — build and run correctly for all four services                 | 1    |
+| docker-compose.yml — networking, env vars, port mapping, depends_on         | 1    |
+| **Total**                                                                   | **/8** |
