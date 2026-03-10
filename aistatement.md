@@ -1,0 +1,1 @@
+I used an AI assistant (ChatGPT) to help generate boilerplate code, check dependency compatibility for the assignment,  and suggest corrected solutions for code errors in this assignment. Reviewed and integrated the required results in my assignment to get the required results. 

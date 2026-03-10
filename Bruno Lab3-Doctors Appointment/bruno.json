@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Lab3-Doctors Appointment",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

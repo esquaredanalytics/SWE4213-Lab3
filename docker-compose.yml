@@ -1,0 +1,167 @@
+services:
+  # ============================================
+  # API Gateway - PROVIDED COMPLETE
+  # ============================================
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      doctor-service:
+        condition: service_healthy
+      appointment-service:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # ============================================
+  # Auth Service + Database - PROVIDED COMPLETE
+  # ============================================
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3003:3003"
+    environment:
+      DB_HOST: auth-db
+      DB_PORT: 5432
+      DB_NAME: authdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      - auth-db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+  auth-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+      - ./auth-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d authdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  doctor-service:
+    build: ./doctor-service
+    ports:
+      - "3002:3002"
+    environment:
+      POSTGRES_HOST: doctor-db 
+      POSTGRES_PORT: 5432      
+      POSTGRES_DB: doctordb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      RABBITMQ_URL: amqp://rabbitmq
+    depends_on:
+      - rabbitmq  
+      - doctor-db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  doctor-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: doctordb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - doctor-data:/var/lib/postgresql/data
+      - ./doctor-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d doctordb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"    
+      - "15672:15672"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  appointment-service:
+    build: ./appointment-service
+    ports:
+      - "3001:3001"
+    environment:
+      DOCTOR_SERVICE_URL: http://doctor-service:3002
+      RABBITMQ_URL: amqp://rabbitmq
+    depends_on:
+      - doctor-service
+      - rabbitmq  
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  records-service:
+    build: ./records-service
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  auth-data:
+  doctor-data:
+
+  
+  
+

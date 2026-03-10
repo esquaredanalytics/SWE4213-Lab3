@@ -1,0 +1,30 @@
+meta {
+  name: createAppointment
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/appointments/create
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRpYiIsImlhdCI6MTc3MjU2MjYyNywiZXhwIjoxNzcyNjQ5MDI3fQ.7wA5IQjcXitzhK-8FBcpsNbV_ttYUFkS7CGlJnlVId8
+}
+
+body:json {
+  {
+    "patient_name": "adib",
+    "patient_email": "adib@gmail.com",
+    "doctor_id": "D002",
+    "reason": "Annual check-up"
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
